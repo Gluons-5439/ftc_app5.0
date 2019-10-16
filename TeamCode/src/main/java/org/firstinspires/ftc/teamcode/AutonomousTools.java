@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -8,21 +9,61 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 public class AutonomousTools {
-    final double MAX_WHEEL_VELOCITY = 0.32634;
-    static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
-    static final String LABEL_GOLD_MINERAL = "Gold Mineral";
-    static final String LABEL_SILVER_MINERAL = "Silver Mineral";
+    final double WHEEL_RADIUS = 2;  // Radius in inches
+    final double AUTO_POWER = 1;
+
+
 
     public VuforiaLocalizer vuforia;
-
     public TFObjectDetector tfod;
+
     public AutonomousTools() {
 
     }
 
     // NOTE ===========================================================
+    // New encoder stuff!
+    // ================================================================
+
+    /**
+     * Public method to move the robot using encoder position.
+     *
+     * @param inches The distance to travel in inches.
+     * @param h The Hardware object that holds the motors.
+     */
+    public void moveToPosition(int inches, Hardware h) {
+        final int TICKS_PER_REV = 1220;
+        final double IN_PER_REV = 2 * Math.PI * WHEEL_RADIUS;
+
+        int ticks = (int)(TICKS_PER_REV / IN_PER_REV * inches);
+
+        moveToPosInTicks(ticks, h);
+    }
+
+    private void moveToPosInTicks(int ticks, Hardware h) {
+        startMotor(h.frontLeft, ticks);
+        startMotor(h.frontRight, ticks);
+        startMotor(h.backLeft, ticks);
+        startMotor(h.backRight, ticks);
+
+        while (h.frontLeft.isBusy() && h.frontRight.isBusy() && h.backLeft.isBusy() && h.backRight.isBusy());
+
+        h.frontLeft.setPower(0);
+        h.frontRight.setPower(0);
+        h.backLeft.setPower(0);
+        h.backRight.setPower(0);
+    }
+
+    private void startMotor(DcMotor motor, int ticks) {
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setTargetPosition(ticks);
+        motor.setPower(AUTO_POWER);
+    }
+
+    // NOTE ===========================================================
     // If we are to use encoders, we might be able to change these movement methods to be better
     // ================================================================
+
     private void setMotorPower(double speed, int fl, int fr, int bl, int br, Hardware hulk) {
         hulk.frontLeft.setPower(speed * fl);
         hulk.frontRight.setPower(speed * fr);
@@ -88,7 +129,7 @@ public class AutonomousTools {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         this.tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, this.vuforia);
-        this.tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+        // this.tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
         tfodParameters.minimumConfidence = 0.6;
     }
 

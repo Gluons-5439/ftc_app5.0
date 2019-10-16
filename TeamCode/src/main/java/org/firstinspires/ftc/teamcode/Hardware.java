@@ -27,10 +27,10 @@ public class Hardware {
     }
 
 
-    public void init(HardwareMap ahwMap) {
+    public void init(HardwareMap ahwMap, boolean initAuto) {
         hwMap = ahwMap;
         initDevices();
-        initMotorSettings();
+        initMotorSettings(initAuto);
         initDefaultPosition();
     }
 
@@ -51,12 +51,21 @@ public class Hardware {
         backLeft = hwMap.dcMotor.get("backLeft");
     }
 
-    private void initMotorSettings() {
+    private void initMotorSettings(boolean initAuto) {
         // Set motor Mode and Direction
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        if (!initAuto) {
+            // Init basic drive. Simply set motor power.
+            frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        } else {
+            frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
 
         frontRight.setDirection(DcMotor.Direction.FORWARD);
         frontLeft.setDirection(DcMotor.Direction.REVERSE);

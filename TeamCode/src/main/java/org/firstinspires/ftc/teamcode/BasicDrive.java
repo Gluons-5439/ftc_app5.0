@@ -5,12 +5,12 @@ import com.qualcomm.robotcore.util.Range;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Basic Drive", group = "TeleOp")
 public class BasicDrive extends LinearOpMode {
-    private final double pow = 1;
+    private final double maxPower = 0.75;
     Hardware hulk = new Hardware();
     AutonomousTools t = new AutonomousTools();
 
     public void runOpMode() throws InterruptedException {
-        hulk.init(hardwareMap);
+        hulk.init(hardwareMap, false);
 
         waitForStart();
 
@@ -19,8 +19,8 @@ public class BasicDrive extends LinearOpMode {
             // DRIVE ====================================================
             // Wonky mecanum wheel code-- don't need to touch it 'cos it works, that's all that we have to care about.
 
-            double forward = Math.abs(gamepad1.left_stick_y) > 0.1 ? gamepad1.left_stick_y * pow : 0;
-            double clockwise = Math.abs(gamepad1.left_stick_x) > 0.1 ? -gamepad1.left_stick_x * pow : 0;
+            double forward = Math.abs(gamepad1.left_stick_y) > 0.1 ? gamepad1.left_stick_y * maxPower : 0;
+            double clockwise = Math.abs(gamepad1.left_stick_x) > 0.1 ? -gamepad1.left_stick_x * maxPower : 0;
             double right = Math.abs(gamepad1.right_stick_x) > 0.1 ? gamepad1.right_stick_x : 0;
             //Math for drive relative to theta
             clockwise *= -0.5;
@@ -42,10 +42,10 @@ public class BasicDrive extends LinearOpMode {
                 bl /= max;
                 br /= max;
             }
-            hulk.frontLeft.setPower(Range.clip(fl,-1,1));
-            hulk.backLeft.setPower(Range.clip(bl,-1,1));
-            hulk.frontRight.setPower(Range.clip(fr,-1,1));
-            hulk.backRight.setPower(Range.clip(br,-1,1));
+            hulk.frontLeft.setPower(Range.clip(fl, -maxPower, maxPower));
+            hulk.backLeft.setPower(Range.clip(bl, -maxPower, maxPower));
+            hulk.frontRight.setPower(Range.clip(fr, -maxPower, maxPower));
+            hulk.backRight.setPower(Range.clip(br, -maxPower, maxPower));
 
             // BUTTONS
 
