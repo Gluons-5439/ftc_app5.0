@@ -15,19 +15,22 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "Crater", group = "Autonomous")
+@Autonomous(name = "RedAuto", group = "Autonomous")
 public class RedAuto extends LinearOpMode {
 
-    Hardware hardware = new Hardware();
+    Hardware robot = new Hardware();
     AutonomousTools auto = new AutonomousTools();
 //    ArrayList<DcMotor> wheels = new ArrayList<>();
-
+    robot.init(hardwareMap);
     public void runOpMode() throws InterruptedException {
-//        wheels.add(hardware.frontLeft);
-//        wheels.add(hardware.frontRight);
-//        wheels.add(hardware.backLeft);
-//        wheels.add(hardware.backRight);
-
+    
+    //        wheels.add(hardware.frontLeft);
+    //        wheels.add(hardware.frontRight);
+    //        wheels.add(hardware.backLeft);
+    //        wheels.add(hardware.backRight);  What is this for? - Arjun
+    
+        
+        
         hardware.init(hardwareMap, true);
         waitForStart();
         auto.tfod.activate();
